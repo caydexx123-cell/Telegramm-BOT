@@ -38,8 +38,11 @@ def ask_ai(question, chat_id):
         # Получаем историю чата
         history = get_chat_history(chat_id)
         
+        # Системный промпт - ВСЕГДА отвечать на русском
+        system_prompt = {"role": "system", "content": "Ты полезный AI-помощник. ВСЕГДА отвечай ТОЛЬКО на русском языке, даже если тебя спрашивают на другом языке. Будь дружелюбным и помогай людям."}
+        
         # Добавляем текущий вопрос
-        messages = history + [{"role": "user", "content": question}]
+        messages = [system_prompt] + history + [{"role": "user", "content": question}]
         
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
