@@ -68,7 +68,7 @@ def ask_ai(question, chat_id):
                 "X-Title": "Telegram Bot"
             },
             json={
-                "model": "allenai/molmo-2-8b:free",
+                "model": "xiaomi/mimo-v2-flash:free",
                 "messages": messages
             },
             timeout=15
