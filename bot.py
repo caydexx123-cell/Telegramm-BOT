@@ -24,9 +24,9 @@ def add_to_history(chat_id, role, content):
     
     chat_history[chat_id].append({"role": role, "content": content})
     
-    # Храним только последние 10 сообщений
-    if len(chat_history[chat_id]) > 20:  # 10 пар (user + assistant)
-        chat_history[chat_id] = chat_history[chat_id][-20:]
+    # Храним только последние 20 сообщений
+    if len(chat_history[chat_id]) > 40:  # 20 пар (user + assistant)
+        chat_history[chat_id] = chat_history[chat_id][-40:]
 
 # Функция для получения истории чата
 def get_chat_history(chat_id):
@@ -82,53 +82,11 @@ def ask_ai(question, chat_id):
             add_to_history(chat_id, "user", question)
             add_to_history(chat_id, "assistant", answer)
             
-            # Форматируем код в красивые блоки
-            answer = format_code_blocks(answer)
-            
             return answer
         else:
             return f"❌ Ошибка AI: {response.status_code}"
     except Exception as e:
         return f"❌ Ошибка: {str(e)}"
-
-# Функция для форматирования кода в блоки
-def format_code_blocks(text):
-    # Если в тексте есть код без блоков - оборачиваем
-    import re
-    
-    # Ищем паттерны кода (например function, local, if, for в Lua)
-    lua_keywords = r'(function|local|if|then|end|for|while|do|return)'
-    
-    # Если есть ключевые слова и нет блоков кода
-    if re.search(lua_keywords, text) and '```' not in text:
-        # Пытаемся найти блоки кода и обернуть их
-        lines = text.split('\n')
-        in_code = False
-        result = []
-        code_block = []
-        
-        for line in lines:
-            if re.search(lua_keywords, line) and not in_code:
-                in_code = True
-                code_block = [line]
-            elif in_code:
-                if line.strip() == '' or not re.match(r'^[a-zA-Z]', line):
-                    code_block.append(line)
-                else:
-                    # Конец блока кода
-                    result.append('```lua\n' + '\n'.join(code_block) + '\n```')
-                    result.append(line)
-                    in_code = False
-                    code_block = []
-            else:
-                result.append(line)
-        
-        if in_code and code_block:
-            result.append('```lua\n' + '\n'.join(code_block) + '\n```')
-        
-        return '\n'.join(result)
-    
-    return text
 
 # Простые ответы без AI
 def get_simple_answer(text):
